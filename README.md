@@ -20,6 +20,30 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Stack authentication setup
+
+Authentication and registration are powered by [Stack](https://stack-auth.com/). The Stack UI will automatically appear once the required environment variables are configured.
+
+### Required environment variables
+
+Create a `.env.local` file (or update your deployment secrets) with the following keys:
+
+```
+NEXT_PUBLIC_STACK_PROJECT_ID="<your-stack-project-id>"
+NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY="<your-stack-publishable-key>"
+STACK_SECRET_SERVER_KEY="<your-stack-secret-server-key>"
+```
+
+Restart the dev server after adding the values. When these variables are missing, sign-in and sign-up pages will display a helpful configuration warning and protected routes will stay publicly accessible so the rest of the app can still be previewed.
+
+### Handler route
+
+Stack relies on `/auth/stack/*` for email verification, password reset, OAuth callbacks, and other auth flows. This repository already exposes that handler through `app/auth/stack/[...stack]/page.tsx`. If you customise the base path, update `STACK_URLS` in `src/lib/stack-config.ts` accordingly.
+
+### Protected routes
+
+Once credentials are in place, `/admin`, `/orders`, and `/checkout/confirmation` require a signed-in session. Adjust the list inside `src/middleware.ts` if additional pages should be locked down.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

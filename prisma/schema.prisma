@@ -1,0 +1,194 @@
+// Prisma schema for Shop4Me MVP data layer
+// Each model and enum is aligned with PRD §6 and §11.4 to capture
+// delivery metadata, M-Pesa reconciliation, and admin workflows.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum Language {
+  EN
+  SW
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIAL
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_PAYMENT
+  PROCESSING
+  SHOPPING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum ReconciliationStatus {
+  NOT_REQUIRED
+  PENDING
+  COMPLETED
+  DISCREPANCY
+}
+
+enum StatusActor {
+  CUSTOMER
+  ADMIN
+  SYSTEM
+}
+
+enum StatusChannel {
+  WEB
+  WHATSAPP
+  SMS
+  ADMIN_PORTAL
+}
+
+model User {
+  id               String         @id @default(cuid())
+  name             String?
+  phone            String         @unique
+  email            String?        @unique
+  providerId       String         @unique
+  role             UserRole       @default(CUSTOMER)
+  phoneVerified    Boolean        @default(false)
+  defaultLanguage  Language       @default(EN)
+  prefersWhatsapp  Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  orders           Order[]
+  statusLogs       StatusLog[]    @relation("StatusLogActor")
+  expensesEntered  Expense[]      @relation("ExpenseEnteredBy")
+
+  @@map("users")
+}
+
+model Product {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String?
+  category    String?
+  price       Decimal      @db.Decimal(10, 2)
+  currency    String       @default("KES")
+  unit        String?
+  priceNote   String?
+  imageUrl    String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  orderItems  OrderItem[]
+
+  @@index([category])
+  @@map("products")
+}
+
+model Order {
+  id                    String                @id @default(cuid())
+  user                  User?                 @relation(fields: [userId], references: [id])
+  userId                String?
+  customerName          String?
+  customerPhone         String?
+  contactName           String?
+  contactPhone          String?
+  deliveryNotes         String?
+  landmark              String?
+  plusCode              String?
+  latitude              Decimal?              @db.Decimal(9, 6)
+  longitude             Decimal?              @db.Decimal(9, 6)
+  serviceFee            Decimal?              @db.Decimal(10, 2)
+  deliveryFeeEstimated  Decimal?              @db.Decimal(10, 2)
+  deliveryFeeActual     Decimal?              @db.Decimal(10, 2)
+  amountCollected       Decimal?              @db.Decimal(10, 2)
+  amountReconciled      Decimal?              @db.Decimal(10, 2)
+  totalEstimate         Decimal?              @db.Decimal(10, 2)
+  paymentStatus         PaymentStatus         @default(PENDING)
+  orderStatus           OrderStatus           @default(PENDING_PAYMENT)
+  reconciliationStatus  ReconciliationStatus  @default(NOT_REQUIRED)
+  mpesaReceipt          String?               @unique
+  merchantRequestId     String?               @unique
+  checkoutRequestId     String?               @unique
+  cancellationReason    String?
+  preferredDeliverySlot String?
+  paymentDueAt          DateTime?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  items                 OrderItem[]
+  expenses              Expense[]
+  statusLogs            StatusLog[]
+
+  @@index([userId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String    @id @default(cuid())
+  order          Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId        String
+  product        Product?  @relation(fields: [productId], references: [id])
+  productId      String?
+  nameOverride   String?
+  quantity       Int       @default(1)
+  unitPrice      Decimal   @default(0) @db.Decimal(10, 2)
+  estimatedPrice Decimal?  @db.Decimal(10, 2)
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Expense {
+  id           String    @id @default(cuid())
+  order        Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId      String
+  cost         Decimal   @default(0) @db.Decimal(10, 2)
+  deliveryFee  Decimal?  @db.Decimal(10, 2)
+  currency     String    @default("KES")
+  note         String?
+  evidenceUrl  String?
+  enteredBy    User?     @relation("ExpenseEnteredBy", fields: [enteredById], references: [id])
+  enteredById  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([orderId])
+  @@map("expenses")
+}
+
+model StatusLog {
+  id           String        @id @default(cuid())
+  order        Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId      String
+  status       OrderStatus
+  actor        StatusActor   @default(SYSTEM)
+  actorUser    User?         @relation("StatusLogActor", fields: [actorUserId], references: [id])
+  actorUserId  String?
+  channel      StatusChannel @default(WEB)
+  note         String?
+  createdAt    DateTime      @default(now())
+
+  @@index([orderId])
+  @@map("status_logs")
+}
