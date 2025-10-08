@@ -70,7 +70,7 @@ export default async function ProductsPage() {
   const grouped = groupProducts(products);
 
   return (
-    <main className="mx-auto max-w-6xl p-6">
+    <div>
       <header className="mb-8 space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-3xl font-bold">Browse the catalogue</h1>
@@ -138,6 +138,6 @@ export default async function ProductsPage() {
           </Card>
         ))}
       </section>
-    </main>
+    </div>
   );
 }

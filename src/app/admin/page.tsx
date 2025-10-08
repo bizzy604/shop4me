@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { isCurrentUserAdmin } from "@/lib/user-persistence";
+import { stackServerApp } from "@/lib/stack";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/currency";
 
@@ -62,10 +63,23 @@ function formatDate(date: Date): string {
 }
 
 export default async function AdminDashboardPage() {
-  // Check admin access
-  const isAdmin = await isCurrentUserAdmin();
-  
-  if (!isAdmin) {
+  try {
+    // Check if user is authenticated first
+    const stackUser = await stackServerApp.getUser();
+    
+    if (!stackUser) {
+      redirect("/auth/signin?redirect=" + encodeURIComponent("/admin"));
+    }
+    
+    // Check admin access
+    const isAdmin = await isCurrentUserAdmin();
+    
+    if (!isAdmin) {
+      // If not admin, redirect to home with a message
+      redirect("/?error=unauthorized");
+    }
+  } catch (error) {
+    console.error('Error checking admin access:', error);
     redirect("/auth/signin?redirect=" + encodeURIComponent("/admin"));
   }
 

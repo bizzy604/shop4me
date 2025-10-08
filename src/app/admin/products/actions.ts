@@ -105,7 +105,7 @@ export async function createProduct(formData: FormData): Promise<ActionResult> {
     if (error instanceof z.ZodError) {
       return { 
         success: false, 
-        error: error.errors.map((e: { message: string }) => e.message).join(", ") 
+        error: error.issues.map((e) => e.message).join(", ") 
       };
     }
     
@@ -185,7 +185,7 @@ export async function updateProduct(productId: string, formData: FormData): Prom
     if (error instanceof z.ZodError) {
       return { 
         success: false, 
-        error: error.errors.map((e: { message: string }) => e.message).join(", ") 
+        error: error.issues.map((e) => e.message).join(", ") 
       };
     }
     

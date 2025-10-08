@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { isCurrentUserAdmin } from "@/lib/user-persistence";
+import type { Prisma } from "@/generated/prisma";
+import { OrderStatus } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/currency";
 
@@ -86,10 +88,10 @@ export default async function AdminOrdersPage({ searchParams }: SearchParams) {
   const itemsPerPage = 20;
 
   // Build where clause for filtering
-  const whereClause: any = {};
+  const whereClause: Prisma.OrderWhereInput = {};
   
   if (statusFilter && statusFilter !== "all") {
-    whereClause.orderStatus = statusFilter.toUpperCase();
+    whereClause.orderStatus = statusFilter.toUpperCase() as OrderStatus;
   }
   
   if (searchQuery) {

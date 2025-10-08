@@ -26,8 +26,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createProduct, updateProduct } from "@/app/admin/products/actions";
 
+// Type for product with serialized price (number instead of Decimal)
+type SerializedProduct = Omit<Product, 'price'> & { price: number };
+
 interface ProductFormProps {
-  product?: Product;
+  product?: SerializedProduct;
 }
 
 export function ProductForm({ product }: ProductFormProps) {

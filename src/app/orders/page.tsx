@@ -111,7 +111,7 @@ export default async function OrdersPage() {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-8">
+    <div>
       <div className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight">My Orders</h1>
         <p className="mt-2 text-muted-foreground">
@@ -199,6 +199,6 @@ export default async function OrdersPage() {
           <Link href="/products">Continue shopping</Link>
         </Button>
       </div>
-    </main>
+    </div>
   );
 }

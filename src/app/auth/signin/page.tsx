@@ -1,11 +1,12 @@
 'use client';
 
-import { SignIn } from '@stackframe/stack';
-import { useSearchParams } from 'next/navigation';
+import { SignIn, useUser } from '@stackframe/stack';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { STACK_AUTH_REQUIRED_ENV_VARS } from '@/lib/stack-config';
 import Link from 'next/link';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 const stackProjectId = process.env.NEXT_PUBLIC_STACK_PROJECT_ID;
 const stackPublishableClientKey = process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY;
@@ -20,6 +21,17 @@ const isStackConfigured = Boolean(stackProjectId && stackPublishableClientKey);
 function SignInContent() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
+  const user = useUser({ or: 'return-null' });
+  const router = useRouter();
+  const [hasRedirected, setHasRedirected] = useState(false);
+
+  // If user is already signed in and there's a redirect parameter, redirect them
+  useEffect(() => {
+    if (user && redirect !== '/' && !hasRedirected) {
+      setHasRedirected(true);
+      router.push(redirect);
+    }
+  }, [user, redirect, router, hasRedirected]);
 
   if (!isStackConfigured) {
     return (
@@ -37,6 +49,33 @@ function SignInContent() {
           ))}
           .
         </p>
+      </div>
+    );
+  }
+
+  // If user is already signed in, show appropriate message and redirect options
+  if (user) {
+    return (
+      <div className="space-y-4 text-center">
+        <h2 className="text-xl font-semibold">You are already signed in</h2>
+        <div className="flex gap-2 justify-center">
+          <Button 
+            variant="outline" 
+            onClick={() => router.push('/auth/stack/sign-out')}
+          >
+            Sign out
+          </Button>
+          <Button 
+            onClick={() => router.push(redirect)}
+          >
+            {redirect === '/admin' ? 'Go to Admin' : 'Go home'}
+          </Button>
+        </div>
+        {redirect !== '/' && (
+          <p className="text-xs text-muted-foreground">
+            You&apos;ll be redirected to {redirect} after clicking Continue
+          </p>
+        )}
       </div>
     );
   }

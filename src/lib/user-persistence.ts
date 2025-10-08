@@ -8,6 +8,12 @@
 import { stackServerApp } from './stack';
 import prisma from './prisma';
 
+interface ContactChannel {
+  type: string;
+  value: string;
+  verified: boolean;
+}
+
 /**
  * Ensures a Stack Auth user exists in the Prisma users table.
  * Creates a new user record if it doesn't exist.
@@ -16,38 +22,46 @@ import prisma from './prisma';
  * @returns The Prisma user record
  */
 export async function ensureUserInDatabase(stackUserId: string) {
-  // Get current user from Stack Auth
-  const stackUser = await stackServerApp.getUser();
-  
-  if (!stackUser || stackUser.id !== stackUserId) {
-    throw new Error('Stack user not found or ID mismatch');
+  try {
+    // Get current user from Stack Auth
+    const stackUser = await stackServerApp.getUser();
+    
+    if (!stackUser || stackUser.id !== stackUserId) {
+      throw new Error('Stack user not found or ID mismatch');
+    }
+
+    // Extract phone number from contact channels
+    // Note: Stack might only support email channels, so we'll use a fallback approach
+    const phone = stackUser.displayName || '';
+    const phoneVerified = false;
+
+    // Check if this is the first user - if so, make them admin
+    const userCount = await prisma.user.count();
+    const isFirstUser = userCount === 0;
+
+    const user = await prisma.user.upsert({
+      where: { providerId: stackUserId },
+      update: {
+        email: stackUser.primaryEmail,
+        phone: phone,
+        name: stackUser.displayName,
+        phoneVerified: phoneVerified,
+      },
+      create: {
+        providerId: stackUserId,
+        email: stackUser.primaryEmail,
+        phone: phone,
+        name: stackUser.displayName,
+        phoneVerified: phoneVerified,
+        role: isFirstUser ? 'ADMIN' : 'CUSTOMER', // First user becomes admin
+      },
+    });
+
+    return user;
+  } catch (error) {
+    console.error('Error ensuring user in database:', error);
+    throw error;
   }
-
-  // Extract phone number from contact channels
-  const contactChannels = await stackUser.useContactChannels();
-  const phoneChannel = contactChannels?.find((c: any) => c.type === 'phone');
-  const phone = phoneChannel?.value || null;
-  const phoneVerified = phoneChannel?.verified || false;
-
-  const user = await prisma.user.upsert({
-    where: { providerId: stackUserId },
-    update: {
-      email: stackUser.primaryEmail,
-      phone: phone,
-      name: stackUser.displayName,
-      phoneVerified: phoneVerified,
-    },
-    create: {
-      providerId: stackUserId,
-      email: stackUser.primaryEmail,
-      phone: phone,
-      name: stackUser.displayName,
-      phoneVerified: phoneVerified,
-      role: 'CUSTOMER', // Default role
-    },
-  });
-
-  return user;
 }
 
 /**
@@ -96,11 +110,18 @@ export async function getCurrentUser() {
  * @returns True if current user is an admin
  */
 export async function isCurrentUserAdmin(): Promise<boolean> {
-  const stackUser = await stackServerApp.getUser();
-  
-  if (!stackUser) {
+  try {
+    const stackUser = await stackServerApp.getUser();
+    
+    if (!stackUser) {
+      return false;
+    }
+
+    // Ensure user exists in database before checking role
+    const user = await ensureUserInDatabase(stackUser.id);
+    return user.role === 'ADMIN';
+  } catch (error) {
+    console.error('Error checking if user is admin:', error);
     return false;
   }
-
-  return await isUserAdmin(stackUser.id);
 }

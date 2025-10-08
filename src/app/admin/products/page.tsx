@@ -32,7 +32,7 @@ interface SearchParams {
 export default async function AdminProductsPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
   // Check admin access
   const isAdmin = await isCurrentUserAdmin();
@@ -41,9 +41,10 @@ export default async function AdminProductsPage({
     redirect("/auth/signin?redirect=" + encodeURIComponent("/admin/products"));
   }
 
-  const search = searchParams.search || "";
-  const categoryFilter = searchParams.category || "";
-  const statusFilter = searchParams.status || "";
+  const params = await searchParams;
+  const search = params.search || "";
+  const categoryFilter = params.category || "";
+  const statusFilter = params.status || "";
 
   // Build where clause for filtering
   const where: Record<string, unknown> = {};

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PaymentInitiator } from "@/components/checkout/payment-initiator";
+import { PaymentStatusChecker } from "@/components/order/payment-status-checker";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/currency";
 
@@ -153,6 +154,14 @@ export default async function CheckoutConfirmationPage({ searchParams }: Confirm
           customerPhone={order.customerPhone}
           paymentStatus={order.paymentStatus}
           orderStatus={order.orderStatus}
+        />
+
+        {/* Real-time payment status updates */}
+        <PaymentStatusChecker
+          orderId={order.id}
+          initialPaymentStatus={order.paymentStatus}
+          initialOrderStatus={order.orderStatus}
+          checkoutRequestId={order.checkoutRequestId}
         />
 
         <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">

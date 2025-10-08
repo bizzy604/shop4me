@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function CheckoutPage() {
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-12 lg:px-8">
+    <div className="flex w-full flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -27,6 +27,6 @@ export default function CheckoutPage() {
       </div>
 
       <CheckoutForm />
-    </main>
+    </div>
   );
 }

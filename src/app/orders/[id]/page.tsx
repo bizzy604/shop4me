@@ -18,6 +18,7 @@ import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PaymentStatusChecker } from "@/components/order/payment-status-checker";
 import { stackServerApp } from "@/lib/stack";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/currency";
@@ -84,22 +85,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function OrderDetailPage({ params }: Props) {
   const { id } = await params;
 
-  // Check authentication
+  // Check authentication - but don't require it for order viewing
   const user = await stackServerApp.getUser();
-  
-  if (!user) {
-    redirect("/auth/signin?redirect=" + encodeURIComponent(`/orders/${id}`));
-  }
 
   // Fetch order with full details
-  const order = await prisma.order.findFirst({
-    where: {
-      id,
-      OR: [
-        { userId: user.id },
-        { customerPhone: user.primaryEmail }, // Fallback for orders before user registration
-      ],
-    },
+  // For now, we allow viewing any order by ID (guest checkout support)
+  // In production, you might want to add phone number verification or similar
+  const order = await prisma.order.findUnique({
+    where: { id },
     include: {
       items: {
         include: {
@@ -173,11 +166,23 @@ export default async function OrderDetailPage({ params }: Props) {
     <main className="mx-auto max-w-4xl px-6 py-8">
       <div className="mb-6">
         <Button variant="ghost" size="sm" asChild className="mb-4">
-          <Link href="/orders">
+          <Link href={user ? "/orders" : "/"}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to orders
+            {user ? "Back to orders" : "Back to home"}
           </Link>
         </Button>
+        
+        {/* Guest user notice */}
+        {!user && (
+          <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <p className="text-sm text-blue-800">
+              <strong>Viewing as guest:</strong> You can track your order here without signing in. 
+              <Link href="/auth/signup" className="ml-1 underline hover:no-underline">
+                Create an account
+              </Link> to manage all your orders in one place.
+            </p>
+          </div>
+        )}
         
         <div className="flex items-start justify-between">
           <div>
@@ -197,6 +202,14 @@ export default async function OrderDetailPage({ params }: Props) {
           </Badge>
         </div>
       </div>
+
+      {/* Payment Status Checker - Shows real-time payment updates */}
+      <PaymentStatusChecker
+        orderId={order.id}
+        initialPaymentStatus={order.paymentStatus}
+        initialOrderStatus={order.orderStatus}
+        checkoutRequestId={order.checkoutRequestId}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-6">

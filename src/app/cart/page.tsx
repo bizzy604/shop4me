@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 
-import { Header } from "@/components/header";
 import { useCart, DEFAULT_SERVICE_FEE } from "@/components/cart-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,9 +53,7 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen p-6 pb-16">
-      <Header />
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+    <div className="flex w-full flex-col gap-8">
         <section className="flex flex-col gap-6 md:flex-row md:items-start">
           <Card className="flex-1">
             <CardHeader>
@@ -239,7 +236,6 @@ export default function CartPage() {
             </CardContent>
           </Card>
         </section>
-      </main>
     </div>
   );
 }

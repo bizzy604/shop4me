@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { isCurrentUserAdmin, getCurrentUser } from "@/lib/user-persistence";
 import prisma from "@/lib/prisma";
+import { OrderStatus, StatusActor, StatusChannel } from "@/generated/prisma";
 
 export type AdminActionResult =
   | { ok: true }
@@ -36,7 +37,7 @@ export async function updateOrderStatus(formData: FormData): Promise<AdminAction
     await prisma.order.update({
       where: { id: orderId },
       data: {
-        orderStatus: status as any,
+        orderStatus: status as OrderStatus,
       },
     });
 
@@ -44,10 +45,10 @@ export async function updateOrderStatus(formData: FormData): Promise<AdminAction
     await prisma.statusLog.create({
       data: {
         orderId,
-        status: status as any,
-        actor: "ADMIN",
+        status: status as OrderStatus,
+        actor: StatusActor.ADMIN,
         actorUserId: currentUser?.id,
-        channel: "ADMIN_PORTAL",
+        channel: StatusChannel.ADMIN_PORTAL,
         note: note || undefined,
       },
     });

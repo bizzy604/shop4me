@@ -13,27 +13,34 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function EditProductPage({ params }: Props) {
+  const { id } = await params;
   // Check admin access
   const isAdmin = await isCurrentUserAdmin();
   
   if (!isAdmin) {
-    redirect("/auth/signin?redirect=" + encodeURIComponent(`/admin/products/${params.id}/edit`));
+    redirect("/auth/signin?redirect=" + encodeURIComponent(`/admin/products/${id}/edit`));
   }
 
   // Fetch the product
   const product = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!product) {
     notFound();
   }
+
+  // Convert Decimal to number for client component
+  const productForForm = {
+    ...product,
+    price: product.price.toNumber(),
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-8">
@@ -53,7 +60,7 @@ export default async function EditProductPage({ params }: Props) {
         </div>
       </div>
 
-      <ProductForm product={product} />
+      <ProductForm product={productForForm} />
     </main>
   );
 }

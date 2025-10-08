@@ -17,11 +17,11 @@ import prisma from './prisma';
 // M-Pesa API URLs
 const MPESA_URLS = {
   sandbox: {
-    oauth: 'https://sandbox.safaricom.co.ke/oauth/v2/generate?grant_type=client_credentials',
+    oauth: 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
     stkpush: 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
   },
   production: {
-    oauth: 'https://api.safaricom.co.ke/oauth/v2/generate?grant_type=client_credentials',
+    oauth: 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
     stkpush: 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
   },
 };
@@ -40,27 +40,54 @@ if (!MPESA_CONSUMER_KEY || !MPESA_SECRET_KEY || !MPESA_SHORTCODE || !MPESA_PASSK
 }
 
 /**
+ * Validate M-Pesa credentials format
+ */
+function validateCredentials(): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (!MPESA_CONSUMER_KEY) {
+    errors.push('MPESA_CONSUMER_KEY is missing');
+  } else if (MPESA_CONSUMER_KEY.trim() !== MPESA_CONSUMER_KEY) {
+    errors.push('MPESA_CONSUMER_KEY has leading/trailing whitespace');
+  } else if (MPESA_CONSUMER_KEY.length < 10) {
+    errors.push('MPESA_CONSUMER_KEY seems too short');
+  }
+  
+  if (!MPESA_SECRET_KEY) {
+    errors.push('MPESA_SECRET_KEY is missing');
+  } else if (MPESA_SECRET_KEY.trim() !== MPESA_SECRET_KEY) {
+    errors.push('MPESA_SECRET_KEY has leading/trailing whitespace');
+  } else if (MPESA_SECRET_KEY.length < 10) {
+    errors.push('MPESA_SECRET_KEY seems too short');
+  }
+  
+  return { isValid: errors.length === 0, errors };
+}
+
+/**
  * Generate M-Pesa OAuth access token
  * Tokens are valid for 1 hour
  */
 async function getAccessToken(): Promise<string> {
-  if (!MPESA_CONSUMER_KEY || !MPESA_SECRET_KEY) {
-    throw new Error('M-Pesa consumer key and secret are required');
+  // Validate credentials
+  const validation = validateCredentials();
+  if (!validation.isValid) {
+    throw new Error(`M-Pesa credentials validation failed: ${validation.errors.join(', ')}`);
   }
 
-  const auth = Buffer.from(`${MPESA_CONSUMER_KEY}:${MPESA_SECRET_KEY}`).toString('base64');
+  const auth = Buffer.from(`${MPESA_CONSUMER_KEY!.trim()}:${MPESA_SECRET_KEY!.trim()}`).toString('base64');
   
   const response = await fetch(MPESA_URLS[MPESA_ENV].oauth, {
     method: 'GET',
     headers: {
       'Authorization': `Basic ${auth}`,
-      'Content-Type': 'application/json',
     },
   });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Failed to get M-Pesa access token: ${error}`);
+    console.error('M-Pesa OAuth failed:', response.status, error);
+    throw new Error(`Failed to get M-Pesa access token (${response.status}): ${error}`);
   }
 
   const data = await response.json();

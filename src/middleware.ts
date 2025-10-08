@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { isStackServerConfigured, stackServerApp } from '@/lib/stack';
 
-const protectedRoutes = ['/admin', '/orders', '/checkout/confirmation'];
+const protectedRoutes = ['/orders', '/checkout/confirmation', '/admin'];
 
 export async function middleware(request: NextRequest) {
   // Skip middleware during build/prerender or if Stack Auth env vars are not set

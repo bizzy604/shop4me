@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import StackAuthProvider from "@/components/stack-provider";
 import { CartProvider } from "@/components/cart-provider";
 import { TooltipProvider } from "@stackframe/stack-ui";
+import { Header } from "@/components/header";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -38,7 +39,12 @@ export default function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                {children}
+                <div className="min-h-screen p-6 pb-16 sm:p-10">
+                  <Header />
+                  <main className="mx-auto w-full max-w-6xl">
+                    {children}
+                  </main>
+                </div>
               </ThemeProvider>
             </TooltipProvider>
           </CartProvider>

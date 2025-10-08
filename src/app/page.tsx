@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { Header } from "@/components/header";
 import { CartIndicator } from "@/components/cart/indicator";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { Button } from "@/components/ui/button";
@@ -44,10 +43,7 @@ export default async function Home() {
     .filter((value, index, self) => value && self.indexOf(value) === index);
 
   return (
-    <div className="min-h-screen p-6 pb-16 sm:p-10">
-      <Header />
-
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12">
+    <div className="flex w-full flex-col gap-12">
         <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background p-10 shadow-sm">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl space-y-6">
@@ -187,7 +183,6 @@ export default async function Home() {
             </CardHeader>
           </Card>
         </section>
-      </main>
     </div>
   );
 }
