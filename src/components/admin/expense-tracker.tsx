@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { Loader2, Plus, Receipt, DollarSign, FileText } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -56,8 +56,10 @@ export function ExpenseTracker({ order }: ExpenseTrackerProps) {
       const result = await addOrderExpense(formData);
       if (!result.ok) {
         setFormError(result.error);
+        toast.error(result.error || "Failed to add expense");
       } else {
         setShowAddForm(false);
+        toast.success("Expense added successfully!");
         // Reset form
         event.currentTarget.reset();
       }

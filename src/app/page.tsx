@@ -43,24 +43,24 @@ export default async function Home() {
     .filter((value, index, self) => value && self.indexOf(value) === index);
 
   return (
-    <div className="flex w-full flex-col gap-12">
-        <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background p-10 shadow-sm">
-          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl space-y-6">
-              <Badge variant="secondary" className="rounded-full px-4 py-1">Now serving Lodwar</Badge>
-              <div className="space-y-4">
-                <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+    <div className="flex w-full flex-col gap-8 sm:gap-12">
+        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background p-6 sm:p-8 md:p-10 shadow-sm">
+          <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-xl space-y-4 sm:space-y-6">
+              <Badge variant="secondary" className="rounded-full px-3 sm:px-4 py-1 text-xs sm:text-sm">Now serving Lodwar</Badge>
+              <div className="space-y-3 sm:space-y-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
                   Shop local markets without leaving home.
                 </h1>
-                <p className="text-lg text-muted-foreground">
+                <p className="text-base sm:text-lg text-muted-foreground">
                   We shop from trusted Lodwar vendors, pay with M-Pesa on your behalf, and deliver everything to your doorstep the same day.
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <Button size="lg" asChild>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <Button size="lg" asChild className="text-sm sm:text-base">
                   <Link href="/products">Browse catalogue</Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
+                <Button size="lg" variant="outline" asChild className="text-sm sm:text-base">
                   <Link href="/checkout">Place an order</Link>
                 </Button>
                 <div className="hidden sm:block">
@@ -68,20 +68,20 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            <Card className="max-w-md border-none bg-background/70 shadow-lg backdrop-blur">
-              <CardHeader>
-                <CardTitle className="text-xl">How it works</CardTitle>
-                <CardDescription>Three simple steps to get essentials delivered.</CardDescription>
+            <Card className="w-full max-w-md border-none bg-background/70 shadow-lg backdrop-blur">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg sm:text-xl">How it works</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">Three simple steps to get essentials delivered.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
                 {shoppingSteps.map((step, index) => (
-                  <div key={step.title} className="flex gap-4">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                  <div key={step.title} className="flex gap-3 sm:gap-4">
+                    <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-primary/10 text-xs sm:text-sm font-semibold text-primary flex-shrink-0">
                       {index + 1}
                     </span>
                     <div>
-                      <p className="font-medium">{step.title}</p>
-                      <p className="text-sm text-muted-foreground">{step.description}</p>
+                      <p className="font-medium text-sm sm:text-base">{step.title}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{step.description}</p>
                     </div>
                   </div>
                 ))}
@@ -90,14 +90,14 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
+        <section className="grid gap-4 sm:gap-6 lg:grid-cols-[2fr,1fr]">
           <Card className="border shadow-sm">
-            <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <CardHeader className="flex flex-col gap-3 sm:gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <CardTitle>Popular picks this week</CardTitle>
-                <CardDescription>Curated staples with upfront estimates. Tap to customise quantities.</CardDescription>
+                <CardTitle className="text-lg sm:text-xl">Popular picks this week</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">Curated staples with upfront estimates. Tap to customise quantities.</CardDescription>
               </div>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="self-start sm:self-auto">
                 <Link href="/products" className="text-sm">View full catalogue</Link>
               </Button>
             </CardHeader>

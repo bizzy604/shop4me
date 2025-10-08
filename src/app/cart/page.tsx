@@ -53,16 +53,16 @@ export default function CartPage() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-8">
-        <section className="flex flex-col gap-6 md:flex-row md:items-start">
+    <div className="flex w-full flex-col gap-6 sm:gap-8">
+        <section className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start">
           <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>Your cart ({itemCount} {itemCount === 1 ? "item" : "items"})</CardTitle>
-              <CardDescription>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg sm:text-xl">Your cart ({itemCount} {itemCount === 1 ? "item" : "items"})</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 Review quantities before checkout. We will reconcile final totals after our shopper confirms market prices.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
               {!hydrated ? (
                 <p className="text-sm text-muted-foreground">Loading your cart…</p>
               ) : items.length === 0 ? (
@@ -70,46 +70,49 @@ export default function CartPage() {
                   Your cart is empty. <Link href="/products" className="font-medium text-primary">Browse products</Link> to start a request.
                 </div>
               ) : (
-                <ul className="space-y-4">
+                <ul className="space-y-3 sm:space-y-4">
                   {items.map((item) => (
-                    <li key={item.id} className="flex flex-col gap-3 rounded-xl border border-border/60 p-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="space-y-1">
-                        <p className="font-medium leading-tight">{item.name}</p>
+                    <li key={item.id} className="flex flex-col gap-3 rounded-xl border border-border/60 p-3 sm:p-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="space-y-1 flex-1">
+                        <p className="font-medium leading-tight text-sm sm:text-base">{item.name}</p>
                         {item.unit ? (
                           <p className="text-xs text-muted-foreground">{item.unit}</p>
                         ) : null}
-                        <p className="text-sm text-muted-foreground">{formatCurrency(item.price)} each</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{formatCurrency(item.price)} each</p>
                       </div>
-                      <div className="flex items-center gap-3 self-end sm:self-auto">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
+                        <div className="flex items-center gap-1 sm:gap-2">
                           <Button
                             variant="outline"
                             size="icon"
+                            className="h-8 w-8 sm:h-10 sm:w-10"
                             aria-label={`Decrease ${item.name}`}
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           >
-                            <Minus className="h-4 w-4" />
+                            <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
-                          <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                          <span className="w-6 sm:w-8 text-center text-sm sm:text-base font-semibold">{item.quantity}</span>
                           <Button
                             variant="outline"
                             size="icon"
+                            className="h-8 w-8 sm:h-10 sm:w-10"
                             aria-label={`Increase ${item.name}`}
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm font-semibold">{formatCurrency(item.price * item.quantity)}</p>
+                        <div className="text-right min-w-[70px] sm:min-w-[80px]">
+                          <p className="text-xs sm:text-sm font-semibold">{formatCurrency(item.price * item.quantity)}</p>
                         </div>
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-8 w-8 sm:h-10 sm:w-10"
                           aria-label={`Remove ${item.name}`}
                           onClick={() => removeItem(item.id)}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </li>
@@ -118,7 +121,7 @@ export default function CartPage() {
               )}
             </CardContent>
             {items.length > 0 ? (
-              <CardFooter className="justify-between border-t bg-muted/50 py-4 text-sm text-muted-foreground">
+              <CardFooter className="justify-between border-t bg-muted/50 py-3 sm:py-4 text-xs sm:text-sm text-muted-foreground">
                 <Link href="/products" className="transition hover:text-primary">
                   + Add more items
                 </Link>
@@ -126,7 +129,7 @@ export default function CartPage() {
             ) : null}
           </Card>
 
-          <Card className="w-full max-w-md">
+          <Card className="w-full lg:max-w-md lg:sticky lg:top-4">
             <CardHeader>
               <CardTitle>Cost summary</CardTitle>
               <CardDescription>Service fee covers shopper time and coordination. Delivery is reconciled after drop-off.</CardDescription>

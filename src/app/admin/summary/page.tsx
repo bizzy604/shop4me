@@ -4,11 +4,8 @@ import {
   ArrowLeft,
   TrendingUp,
   DollarSign,
-  Package,
-  Users,
   Calendar,
   CheckCircle,
-  ShoppingBag,
 } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -55,7 +52,6 @@ export default async function AdminSummaryPage() {
     lastMonthStats,
     recentDelivered,
     topProducts,
-    dailyRevenue,
   ] = await Promise.all([
     // All-time statistics
     Promise.all([
@@ -160,32 +156,13 @@ export default async function AdminSummaryPage() {
         product: products.find(p => p.id === item.productId),
       }));
     }),
-
-    // Daily revenue for the last 30 days
-    prisma.$queryRaw`
-      SELECT 
-        DATE(created_at) as date,
-        COUNT(*) as order_count,
-        SUM(COALESCE(amount_collected, 0)) as revenue
-      FROM orders 
-      WHERE 
-        payment_status = 'PAID' 
-        AND created_at >= NOW() - INTERVAL '30 days'
-      GROUP BY DATE(created_at)
-      ORDER BY date DESC
-      LIMIT 30
-    ` as Promise<Array<{
-      date: Date;
-      order_count: bigint;
-      revenue: number;
-    }>>,
   ]);
 
   const [totalOrders, deliveredOrders, totalRevenueData, totalExpensesData] = totalStats;
   const [todayOrders, todayRevenueData] = todayStats;
   const [weekOrders, weekRevenueData] = weekStats;
   const [monthOrders, monthRevenueData] = monthStats;
-  const [lastMonthOrders, lastMonthRevenueData] = lastMonthStats;
+  const [, lastMonthRevenueData] = lastMonthStats;
 
   const totalRevenue = totalRevenueData._sum.amountCollected?.toNumber() || 0;
   const totalExpenses = (totalExpensesData._sum.cost?.toNumber() || 0) + 

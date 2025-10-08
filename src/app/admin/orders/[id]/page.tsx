@@ -12,15 +12,13 @@ import {
   Phone,
   CreditCard,
   Receipt,
-  Edit,
   DollarSign,
-  Upload,
 } from "lucide-react";
 import type { Metadata } from "next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isCurrentUserAdmin } from "@/lib/user-persistence";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/currency";

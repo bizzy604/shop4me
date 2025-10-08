@@ -7,7 +7,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import StackAuthProvider from "@/components/stack-provider";
 import { CartProvider } from "@/components/cart-provider";
 import { TooltipProvider } from "@stackframe/stack-ui";
-import { Header } from "@/components/header";
+import { ConditionalHeader, CustomerPageWrapper, ConditionalFooter } from "@/components/conditional-header";
+import { Toaster } from "@/components/ui/sonner";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -34,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning
-        className={`${dmSans.variable} ${spaceMono.variable} font-sans antialiased`}
+        className={`${dmSans.variable} ${spaceMono.variable} font-sans antialiased flex flex-col min-h-screen`}
       ><StackProvider app={stackClientApp}><StackTheme>
         <StackAuthProvider>
           <CartProvider>
@@ -45,12 +46,12 @@ export default function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                <div className="min-h-screen p-6 pb-16 sm:p-10">
-                  <Header />
-                  <main className="mx-auto w-full max-w-6xl">
-                    {children}
-                  </main>
-                </div>
+                <ConditionalHeader />
+                <CustomerPageWrapper>
+                  {children}
+                </CustomerPageWrapper>
+                <ConditionalFooter />
+                <Toaster />
               </ThemeProvider>
             </TooltipProvider>
           </CartProvider>

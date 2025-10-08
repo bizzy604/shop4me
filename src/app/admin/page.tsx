@@ -8,7 +8,6 @@ import {
   Clock,
   CreditCard,
   TrendingUp,
-  Users,
   DollarSign,
 } from "lucide-react";
 import type { Metadata } from "next";

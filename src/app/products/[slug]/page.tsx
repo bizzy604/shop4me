@@ -68,8 +68,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   });
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-10">
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground">
+    <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 sm:gap-12 px-4 sm:px-6 py-6 sm:py-10">
+      <nav className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
         <Link href="/products" className="transition hover:text-primary">
           Products
         </Link>
@@ -77,18 +77,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <span className="font-medium text-foreground">{product.name}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-[2fr,1fr] lg:items-start">
-        <article className="space-y-6">
-          <div className="space-y-3">
-            <Badge variant="secondary" className="px-3 py-1 text-xs uppercase tracking-wide">
+      <div className="grid gap-6 sm:gap-10 lg:grid-cols-[2fr,1fr] lg:items-start">
+        <article className="space-y-4 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-3">
+            <Badge variant="secondary" className="px-2 sm:px-3 py-1 text-xs uppercase tracking-wide">
               {product.category ?? "Everyday essentials"}
             </Badge>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{product.name}</h1>
-            {product.unit ? <p className="text-sm text-muted-foreground">Packed as: {product.unit}</p> : null}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">{product.name}</h1>
+            {product.unit ? <p className="text-xs sm:text-sm text-muted-foreground">Packed as: {product.unit}</p> : null}
           </div>
 
           {product.imageUrl ? (
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border bg-muted">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl sm:rounded-2xl border bg-muted">
               <Image
                 src={product.imageUrl}
                 alt={product.name}
@@ -101,11 +101,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ) : null}
 
           <Card>
-            <CardHeader>
-              <CardTitle>What to expect</CardTitle>
-              <CardDescription>We reconcile any difference with you over WhatsApp before completing delivery.</CardDescription>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg sm:text-xl">What to expect</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">We reconcile any difference with you over WhatsApp before completing delivery.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <CardContent className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-muted-foreground">
               <p>
                 {product.description ??
                   "Our shopper will look for the freshest stock in Lodwar markets and confirm availability before initiating payment."}
@@ -120,17 +120,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </Card>
         </article>
 
-        <aside className="space-y-6">
-          <Card className="border-primary/20 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-2xl">{priceLabel}</CardTitle>
-              <CardDescription>Estimated price based on recent market checks.</CardDescription>
+        <aside className="space-y-4 sm:space-y-6">
+          <Card className="border-primary/20 shadow-sm lg:sticky lg:top-4">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl sm:text-2xl">{priceLabel}</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Estimated price based on recent market checks.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-muted-foreground">
+            <CardContent className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-muted-foreground">
               <p>Includes shopper coordination. Delivery fee is reconciled separately after drop-off.</p>
               {product.unit ? <p>Standard quantity: {product.unit}.</p> : null}
             </CardContent>
-            <CardFooter className="flex flex-col gap-3">
+            <CardFooter className="flex flex-col gap-2 sm:gap-3">
               <AddToCartButton
                 product={{
                   id: product.id,

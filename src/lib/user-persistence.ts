@@ -8,12 +8,6 @@
 import { stackServerApp } from './stack';
 import prisma from './prisma';
 
-interface ContactChannel {
-  type: string;
-  value: string;
-  verified: boolean;
-}
-
 /**
  * Ensures a Stack Auth user exists in the Prisma users table.
  * Creates a new user record if it doesn't exist.

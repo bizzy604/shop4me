@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from "@/lib/prisma";
+import { stackServerApp } from "@/lib/stack";
 
 export type CheckoutActionResult =
   | { ok: true; orderId: string }
@@ -104,9 +105,22 @@ export async function createOrderDraft(formData: FormData): Promise<CheckoutActi
     return { ok: false, fieldErrors };
   }
 
+  // Get authenticated user if available
+  let userId: string | null = null;
+  try {
+    const user = await stackServerApp.getUser({ or: 'return-null' });
+    if (user) {
+      userId = user.id;
+    }
+  } catch (error) {
+    console.error("Failed to get user during checkout", error);
+    // Continue without userId - allow guest checkout
+  }
+
   try {
     const order = await prisma.order.create({
       data: {
+        userId, // Link order to authenticated user
         customerName,
         customerPhone,
         contactName: contactName || null,

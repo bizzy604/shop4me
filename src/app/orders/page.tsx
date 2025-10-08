@@ -68,13 +68,21 @@ export default async function OrdersPage() {
     redirect("/auth/signin?redirect=" + encodeURIComponent("/orders"));
   }
 
+  // Build the where clause for finding user's orders
+  // Match by userId primarily, and optionally by email for legacy orders
+  const whereConditions: Array<{ userId?: string; customerPhone?: string }> = [
+    { userId: user.id },
+  ];
+
+  // Add fallback for orders placed with the same email before user registration
+  if (user.primaryEmail) {
+    whereConditions.push({ customerPhone: user.primaryEmail });
+  }
+
   // Fetch user's orders
   const orders = await prisma.order.findMany({
     where: {
-      OR: [
-        { userId: user.id },
-        { customerPhone: user.primaryEmail }, // Fallback for orders before user registration
-      ],
+      OR: whereConditions,
     },
     include: {
       items: {
@@ -95,14 +103,14 @@ export default async function OrdersPage() {
 
   if (orders.length === 0) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-12">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-8 sm:py-12">
         <div className="text-center">
-          <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground" />
-          <h1 className="mt-4 text-3xl font-semibold">No orders yet</h1>
-          <p className="mt-2 text-muted-foreground">
+          <ShoppingBag className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground" />
+          <h1 className="mt-4 text-2xl sm:text-3xl font-semibold">No orders yet</h1>
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground">
             When you place your first order, it will appear here.
           </p>
-          <Button asChild className="mt-6">
+          <Button asChild className="mt-4 sm:mt-6 text-sm sm:text-base">
             <Link href="/products">Start shopping</Link>
           </Button>
         </div>
@@ -111,15 +119,15 @@ export default async function OrdersPage() {
   }
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">My Orders</h1>
-        <p className="mt-2 text-muted-foreground">
-          Track your orders and view delivery status
+    <div className="space-y-6 sm:space-y-8">
+      <header className="space-y-3">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Orders</h1>
+        <p className="text-sm sm:text-base text-muted-foreground max-w-3xl">
+          Track all your shopping requests from draft to delivery. You&apos;ll receive M-Pesa payment prompts once our shopper confirms item availability.
         </p>
-      </div>
+      </header>
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {orders.map((order) => {
           const StatusIcon = STATUS_ICONS[order.orderStatus as keyof typeof STATUS_ICONS] || Clock;
           const itemCount = order._count.items;
@@ -127,15 +135,16 @@ export default async function OrdersPage() {
           
           return (
             <Card key={order.id} className="transition-colors hover:bg-muted/50">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-lg">
+              <CardHeader className="pb-3 space-y-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <CardTitle className="text-base sm:text-lg">
                         Order #{order.id.slice(-8).toUpperCase()}
                       </CardTitle>
                       <Badge 
                         variant={STATUS_COLORS[order.orderStatus as keyof typeof STATUS_COLORS] || "secondary"}
+                        className="text-xs"
                       >
                         <StatusIcon className="mr-1 h-3 w-3" />
                         {formatStatus(order.orderStatus)}

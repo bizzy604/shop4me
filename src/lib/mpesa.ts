@@ -383,9 +383,12 @@ export async function processCallback(callback: MpesaCallback): Promise<{ succes
  * @param checkoutRequestId - The CheckoutRequestID from STK Push
  * @returns Promise with transaction status
  */
-export async function queryTransactionStatus(_checkoutRequestId: string): Promise<{ message: string }> {
+export async function queryTransactionStatus(checkoutRequestId: string): Promise<{ message: string; checkoutRequestId: string }> {
   // TODO: Implement transaction status query
   // This would require the Transaction Status API from Daraja
-  // For now, return a placeholder
-  return { message: 'Transaction status query not implemented yet' };
+  // For now, return a placeholder with the checkoutRequestId for tracking
+  return { 
+    message: 'Transaction status query not implemented yet',
+    checkoutRequestId 
+  };
 }

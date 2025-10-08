@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { Loader2, Save, AlertTriangle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -54,9 +55,10 @@ export function OrderStatusUpdater({ order }: OrderStatusUpdaterProps) {
       const result = await updateOrderStatus(formData);
       if (!result.ok) {
         setFormError(result.error || "Failed to update order status");
+        toast.error(result.error || "Failed to update order status");
       } else {
         setNote(""); // Clear note after successful update
-        // Show success feedback could be added here
+        toast.success("Order status updated successfully!");
       }
     });
   };

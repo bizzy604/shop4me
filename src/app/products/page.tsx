@@ -71,41 +71,41 @@ export default async function ProductsPage() {
 
   return (
     <div>
-      <header className="mb-8 space-y-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-3xl font-bold">Browse the catalogue</h1>
-          <Badge variant="secondary" className="px-3 py-1 text-sm">
+      <header className="mb-6 sm:mb-8 space-y-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold">Browse the catalogue</h1>
+          <Badge variant="secondary" className="px-2 sm:px-3 py-1 text-xs sm:text-sm">
             Real shoppers · Same-day delivery
           </Badge>
         </div>
-        <p className="max-w-3xl text-muted-foreground">
+        <p className="max-w-3xl text-sm sm:text-base text-muted-foreground">
           Prices listed include our service fee and may adjust slightly once receipts are reconciled. We always confirm any changes before payment is due.
         </p>
       </header>
 
-      <section className="grid gap-6 md:grid-cols-2">
+      <section className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         {grouped.map((group) => (
           <Card key={group.category} className="flex h-full flex-col border-muted-foreground/15 shadow-sm">
-            <CardHeader>
-              <CardTitle>{group.category}</CardTitle>
-              <CardDescription>Estimated market pricing — final totals confirmed after shopping.</CardDescription>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg sm:text-xl">{group.category}</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Estimated market pricing — final totals confirmed after shopping.</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 space-y-5">
+            <CardContent className="flex-1 space-y-3 sm:space-y-5">
               {group.items.map((item) => (
-                <div key={item.id} className="flex flex-col gap-3 rounded-xl border border-muted/40 p-4 shadow-xs">
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div key={item.id} className="flex flex-col gap-3 rounded-xl border border-muted/40 p-3 sm:p-4 shadow-xs">
+                  <div className="flex flex-col gap-2 sm:gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <Link href={`/products/${item.slug}`} className="font-semibold hover:text-primary hover:underline">
+                      <Link href={`/products/${item.slug}`} className="font-semibold text-sm sm:text-base hover:text-primary hover:underline">
                         {item.name}
                       </Link>
                       {item.unit ? <p className="text-xs text-muted-foreground">{item.unit}</p> : null}
                     </div>
-                    <span className="text-sm font-semibold text-primary">{item.priceLabel}</span>
+                    <span className="text-sm sm:text-base font-semibold text-primary">{item.priceLabel}</span>
                   </div>
                   {item.priceNote ? <p className="text-xs text-muted-foreground">{item.priceNote}</p> : null}
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Link href={`/products/${item.slug}`} className="font-medium text-primary hover:underline">
+                      <Link href={`/products/${item.slug}`} className="font-medium text-primary hover:underline text-xs sm:text-sm">
                         View details
                       </Link>
                       {item.isCustom ? (
@@ -122,15 +122,16 @@ export default async function ProductsPage() {
                         price: item.price,
                         unit: item.unit,
                       }}
+                      size="sm"
                     />
                   </div>
                 </div>
               ))}
             </CardContent>
-            <CardFooter className="border-t bg-muted/30 text-sm text-muted-foreground">
-              <div className="flex w-full items-center justify-between">
+            <CardFooter className="border-t bg-muted/30 text-xs sm:text-sm text-muted-foreground">
+              <div className="flex w-full flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <span>Need bulk or a special request?</span>
-                <Button variant="ghost" size="sm" asChild>
+                <Button variant="ghost" size="sm" asChild className="text-xs sm:text-sm">
                   <Link href="/checkout">Submit custom order</Link>
                 </Button>
               </div>

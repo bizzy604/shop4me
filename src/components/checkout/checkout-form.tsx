@@ -60,25 +60,25 @@ export function CheckoutForm() {
   };
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="grid gap-6 sm:gap-8 lg:grid-cols-[2fr_1fr]">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Contact details</CardTitle>
-            <CardDescription>We&apos;ll use this to reach you if the shopper has any questions.</CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg sm:text-xl">Contact details</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">We&apos;ll use this to reach you if the shopper has any questions.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
+          <CardContent className="grid gap-3 sm:gap-4 md:grid-cols-2">
             <div className="md:col-span-1">
-              <label htmlFor="customerName" className="text-sm font-medium">
+              <label htmlFor="customerName" className="text-xs sm:text-sm font-medium">
                 Full name <span className="text-destructive">*</span>
               </label>
-              <Input id="customerName" name="customerName" placeholder="Mary A. Lomed" required aria-invalid={Boolean(fieldErrors.customerName)} />
+              <Input id="customerName" name="customerName" placeholder="Mary A. Lomed" required aria-invalid={Boolean(fieldErrors.customerName)} className="text-sm" />
               {fieldErrors.customerName ? (
                 <p className="mt-1 text-xs text-destructive">{fieldErrors.customerName}</p>
               ) : null}
             </div>
             <div className="md:col-span-1">
-              <label htmlFor="customerPhone" className="text-sm font-medium">
+              <label htmlFor="customerPhone" className="text-xs sm:text-sm font-medium">
                 M-Pesa phone number <span className="text-destructive">*</span>
               </label>
               <Input
@@ -89,60 +89,61 @@ export function CheckoutForm() {
                 placeholder="07xx xxx xxx"
                 required
                 aria-invalid={Boolean(fieldErrors.customerPhone)}
+                className="text-sm"
               />
               {fieldErrors.customerPhone ? (
                 <p className="mt-1 text-xs text-destructive">{fieldErrors.customerPhone}</p>
               ) : null}
             </div>
             <div className="md:col-span-1">
-              <label htmlFor="contactName" className="text-sm font-medium">
+              <label htmlFor="contactName" className="text-xs sm:text-sm font-medium">
                 Delivery contact name
               </label>
-              <Input id="contactName" name="contactName" placeholder="If different from you" />
+              <Input id="contactName" name="contactName" placeholder="If different from you" className="text-sm" />
             </div>
             <div className="md:col-span-1">
-              <label htmlFor="contactPhone" className="text-sm font-medium">
+              <label htmlFor="contactPhone" className="text-xs sm:text-sm font-medium">
                 Delivery contact phone
               </label>
-              <Input id="contactPhone" name="contactPhone" type="tel" inputMode="tel" placeholder="Optional" />
+              <Input id="contactPhone" name="contactPhone" type="tel" inputMode="tel" placeholder="Optional" className="text-sm" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Delivery location</CardTitle>
-            <CardDescription>Provide as much detail as possible so our shopper can reach you faster.</CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg sm:text-xl">Delivery location</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Provide as much detail as possible so our shopper can reach you faster.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
+          <CardContent className="grid gap-3 sm:gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label htmlFor="landmark" className="text-sm font-medium">
+              <label htmlFor="landmark" className="text-xs sm:text-sm font-medium">
                 Landmark / estate / building
               </label>
-              <Input id="landmark" name="landmark" placeholder="Opposite Lodwar Boys, next to KCB" />
+              <Input id="landmark" name="landmark" placeholder="Opposite Lodwar Boys, next to KCB" className="text-sm" />
             </div>
             <div className="md:col-span-1">
-              <label htmlFor="plusCode" className="text-sm font-medium">
+              <label htmlFor="plusCode" className="text-xs sm:text-sm font-medium">
                 Google Plus Code or GPS pin
               </label>
-              <Input id="plusCode" name="plusCode" placeholder="e.g. 7M5P+3R Lodwar" />
+              <Input id="plusCode" name="plusCode" placeholder="e.g. 7M5P+3R Lodwar" className="text-sm" />
             </div>
-            <div className="md:col-span-1 grid grid-cols-2 gap-3">
+            <div className="md:col-span-1 grid grid-cols-2 gap-2 sm:gap-3">
               <div>
-                <label htmlFor="latitude" className="text-sm font-medium">
+                <label htmlFor="latitude" className="text-xs sm:text-sm font-medium">
                   Latitude
                 </label>
-                <Input id="latitude" name="latitude" type="number" step="0.000001" placeholder="Optional" />
+                <Input id="latitude" name="latitude" type="number" step="0.000001" placeholder="Optional" className="text-sm" />
               </div>
               <div>
-                <label htmlFor="longitude" className="text-sm font-medium">
+                <label htmlFor="longitude" className="text-xs sm:text-sm font-medium">
                   Longitude
                 </label>
-                <Input id="longitude" name="longitude" type="number" step="0.000001" placeholder="Optional" />
+                <Input id="longitude" name="longitude" type="number" step="0.000001" placeholder="Optional" className="text-sm" />
               </div>
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="deliveryNotes" className="text-sm font-medium">
+              <label htmlFor="deliveryNotes" className="text-xs sm:text-sm font-medium">
                 Delivery notes for the rider
               </label>
               <Textarea
@@ -150,16 +151,17 @@ export function CheckoutForm() {
                 name="deliveryNotes"
                 placeholder=" Gate code, colour of your door, landmarks, or anything else we should know"
                 rows={3}
+                className="text-sm"
               />
             </div>
             <div className="md:col-span-1">
-              <label htmlFor="preferredDeliverySlot" className="text-sm font-medium">
+              <label htmlFor="preferredDeliverySlot" className="text-xs sm:text-sm font-medium">
                 Preferred delivery window
               </label>
               <select
                 id="preferredDeliverySlot"
                 name="preferredDeliverySlot"
-                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 defaultValue="ASAP"
               >
                 <option value="ASAP">As soon as possible (within 4 hours)</option>
@@ -169,10 +171,10 @@ export function CheckoutForm() {
               </select>
             </div>
             <div className="md:col-span-1">
-              <label htmlFor="deliveryFeeEstimated" className="text-sm font-medium">
+              <label htmlFor="deliveryFeeEstimated" className="text-xs sm:text-sm font-medium">
                 Delivery fee estimate (KES)
               </label>
-              <Input id="deliveryFeeEstimated" name="deliveryFeeEstimated" type="number" min={0} step={50} placeholder="e.g. 150" />
+              <Input id="deliveryFeeEstimated" name="deliveryFeeEstimated" type="number" min={0} step={50} placeholder="e.g. 150" className="text-sm" />
             </div>
           </CardContent>
         </Card>
