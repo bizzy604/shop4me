@@ -27,6 +27,13 @@ const NAV_LINKS = [
  * - Includes cart indicator, user menu, and theme toggle
  * - Responsive mobile menu with hamburger icon
  * 
+ * Responsive Behavior:
+ * - Desktop/Tablet: Navigation links displayed inline without wrapping (whitespace-nowrap)
+ *   All action buttons (Cart, User, Theme) visible in header
+ * - Mobile: Cart and hamburger menu in header for clean layout
+ *   User menu and theme toggle moved inside hamburger menu to maximize space
+ *   Navigation links shown in expandable menu
+ * 
  * Dependencies:
  * - Used in: /app/layout.tsx (customer pages)
  * - Links to: Main customer pages (products, cart, checkout, orders)
@@ -35,7 +42,8 @@ const NAV_LINKS = [
  * Why this is important:
  * - Primary navigation for the entire customer experience
  * - Provides easy access to key features from any page
- * - Mobile-first responsive design ensures usability on all devices
+ * - Mobile-first responsive design optimizes space usage on small screens
+ * - Prevents menu item wrapping on larger screens for cleaner appearance
  */
 
 export function Header() {
@@ -46,7 +54,7 @@ export function Header() {
     <header className="mb-6 md:mb-8">
       {/* Desktop & Tablet Header */}
       <div className="hidden sm:flex flex-col gap-4 md:gap-6 md:flex-row md:items-center md:justify-between">
-        <div>
+        <div className="flex-shrink-0">
           <Link href="/" className="text-2xl md:text-3xl font-bold tracking-tight">
             Shop4Me
           </Link>
@@ -54,8 +62,9 @@ export function Header() {
             Lodwar&apos;s concierge shoppers — order online, pay via M-Pesa, deliver today.
           </p>
         </div>
-        <div className="flex flex-col-reverse items-start gap-4 md:flex-row md:items-center">
-          <nav className="flex flex-wrap items-center gap-2 text-sm font-medium">
+        <div className="flex flex-col-reverse items-start gap-4 md:flex-row md:items-center md:flex-shrink-0">
+          {/* Navigation - no wrapping */}
+          <nav className="flex items-center gap-2 text-sm font-medium whitespace-nowrap">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -69,6 +78,7 @@ export function Header() {
               </Link>
             ))}
           </nav>
+          {/* Action buttons */}
           <div className="flex items-center gap-2 md:gap-3 self-end md:self-auto">
             <CartIndicator />
             <UserMenu />
@@ -79,25 +89,22 @@ export function Header() {
 
       {/* Mobile Header */}
       <div className="sm:hidden">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <Link href="/" className="text-xl font-bold tracking-tight">
               Shop4Me
             </Link>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5 truncate">
               Order online, pay via M-Pesa
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <CartIndicator />
-            <UserMenu />
-            <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
-              className="ml-1"
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -106,23 +113,33 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <nav className="mt-4 pb-4 border-t pt-4 space-y-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  "block rounded-lg px-4 py-2.5 text-sm font-medium transition",
-                  pathname.startsWith(link.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="mt-4 pb-4 border-t pt-4">
+            <nav className="space-y-1">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "block rounded-lg px-4 py-2.5 text-sm font-medium transition",
+                    pathname.startsWith(link.href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            
+            {/* User actions in mobile menu */}
+            <div className="mt-4 pt-4 border-t flex items-center justify-between px-4">
+              <div className="flex items-center gap-3">
+                <UserMenu />
+                <ThemeToggle />
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </header>
