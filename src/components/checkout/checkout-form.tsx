@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, Globe, Loader2 } from "lucide-react";
 
 import { createOrderDraft } from "@/app/checkout/actions";
 import { useCart } from "@/components/cart-provider";
@@ -18,6 +18,67 @@ export function CheckoutForm() {
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  /**
+   * Get GPS Location
+   * 
+   * Uses browser's Geolocation API to capture user's current coordinates
+   * and automatically populate latitude and longitude fields.
+   * 
+   * Why this is important:
+   * - Reduces manual entry errors for delivery locations
+   * - Improves delivery accuracy for riders
+   * - Enhances user experience with one-tap location capture
+   */
+  const handleGetLocation = () => {
+    setLocationError(null);
+    
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsGettingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latInput = document.getElementById("latitude") as HTMLInputElement;
+        const lonInput = document.getElementById("longitude") as HTMLInputElement;
+        
+        if (latInput && lonInput) {
+          latInput.value = position.coords.latitude.toFixed(6);
+          lonInput.value = position.coords.longitude.toFixed(6);
+        }
+        
+        setIsGettingLocation(false);
+      },
+      (error) => {
+        let errorMessage = "Unable to retrieve your location";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location permission denied. Please enable location access in your browser.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location information is unavailable.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Location request timed out.";
+            break;
+        }
+        
+        setLocationError(errorMessage);
+        setIsGettingLocation(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -128,19 +189,43 @@ export function CheckoutForm() {
               </label>
               <Input id="plusCode" name="plusCode" placeholder="e.g. 7M5P+3R Lodwar" className="text-sm" />
             </div>
-            <div className="md:col-span-1 grid grid-cols-2 gap-2 sm:gap-3">
-              <div>
+            <div className="md:col-span-1">
+              <div className="flex items-end justify-between gap-2 mb-2">
                 <label htmlFor="latitude" className="text-xs sm:text-sm font-medium">
-                  Latitude
+                  GPS Coordinates
                 </label>
-                <Input id="latitude" name="latitude" type="number" step="0.000001" placeholder="Optional" className="text-sm" />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGetLocation}
+                  disabled={isGettingLocation}
+                  className="h-7 text-xs"
+                >
+                  {isGettingLocation ? (
+                    <>
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                      Getting...
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="h-3 w-3 mr-1" />
+                      Get My Location
+                    </>
+                  )}
+                </Button>
               </div>
-              <div>
-                <label htmlFor="longitude" className="text-xs sm:text-sm font-medium">
-                  Longitude
-                </label>
-                <Input id="longitude" name="longitude" type="number" step="0.000001" placeholder="Optional" className="text-sm" />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Input id="latitude" name="latitude" type="number" step="0.000001" placeholder="Latitude" className="text-sm" />
+                </div>
+                <div>
+                  <Input id="longitude" name="longitude" type="number" step="0.000001" placeholder="Longitude" className="text-sm" />
+                </div>
               </div>
+              {locationError && (
+                <p className="mt-1 text-xs text-destructive">{locationError}</p>
+              )}
             </div>
             <div className="md:col-span-2">
               <label htmlFor="deliveryNotes" className="text-xs sm:text-sm font-medium">
@@ -164,7 +249,7 @@ export function CheckoutForm() {
                 className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 defaultValue="ASAP"
               >
-                <option value="ASAP">As soon as possible (within 4 hours)</option>
+                <option value="ASAP">As soon as possible (within 1 hours)</option>
                 <option value="TODAY_BEFORE_6PM">Today before 6:00 pm</option>
                 <option value="MORNING">Tomorrow morning (8:00-11:00 am)</option>
                 <option value="AFTERNOON">Tomorrow afternoon (12:00-4:00 pm)</option>

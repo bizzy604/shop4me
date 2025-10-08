@@ -5,11 +5,22 @@
  * It handles form validation, submission, and provides user feedback for admin
  * product management operations.
  * 
+ * Features:
+ * - Auto-generates URL slugs from product names
+ * - Predefined category and unit dropdowns for consistency
+ * - Form validation with error handling
+ * - Server action integration for CRUD operations
+ * 
  * Dependencies:
  * - React hooks for form state management
  * - Server actions for product CRUD operations
  * - shadcn/ui components for form elements
  * - Toast notifications for user feedback
+ * 
+ * Why this is important:
+ * - Ensures data consistency across product catalog
+ * - Reduces typing errors with dropdown selections
+ * - Maintains standardized product information structure
  */
 
 "use client";
@@ -25,6 +36,38 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createProduct, updateProduct } from "@/app/admin/products/actions";
+
+// Predefined categories for consistency
+const PRODUCT_CATEGORIES = [
+  { value: "", label: "Select a category..." },
+  { value: "Staples", label: "Staples" },
+  { value: "Dairy", label: "Dairy" },
+  { value: "Bakery", label: "Bakery" },
+  { value: "Butchery", label: "Butchery" },
+  { value: "Beverages", label: "Beverages" },
+  { value: "Household", label: "Household" },
+  { value: "Fruits", label: "Fruits" },
+  { value: "Vegetables", label: "Vegetables" },
+  { value: "Personal Care", label: "Personal Care" },
+  { value: "Snacks", label: "Snacks" },
+] as const;
+
+// Predefined units for consistency
+const PRODUCT_UNITS = [
+  { value: "", label: "Select a unit..." },
+  { value: "kg", label: "kg (kilogram)" },
+  { value: "g", label: "g (grams)" },
+  { value: "L", label: "L (liters)" },
+  { value: "ml", label: "ml (milliliters)" },
+  { value: "piece", label: "piece" },
+  { value: "pack", label: "pack" },
+  { value: "dozen", label: "dozen" },
+  { value: "bag", label: "bag" },
+  { value: "box", label: "box" },
+  { value: "bottle", label: "bottle" },
+  { value: "can", label: "can" },
+  { value: "bunch", label: "bunch" },
+] as const;
 
 // Type for product with serialized price (number instead of Decimal)
 type SerializedProduct = Omit<Product, 'price'> & { price: number };
@@ -161,13 +204,21 @@ export function ProductForm({ product }: ProductFormProps) {
           {/* Category */}
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Input
+            <select
               id="category"
               name="category"
-              type="text"
-              placeholder="e.g., Fruits, Vegetables, Dairy"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               defaultValue={product?.category || ""}
-            />
+            >
+              {PRODUCT_CATEGORIES.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">
+              Select a category to help customers find your product
+            </p>
           </div>
 
           {/* Price and Unit */}
@@ -187,13 +238,18 @@ export function ProductForm({ product }: ProductFormProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="unit">Unit</Label>
-              <Input
+              <select
                 id="unit"
                 name="unit"
-                type="text"
-                placeholder="e.g., kg, piece, dozen"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 defaultValue={product?.unit || ""}
-              />
+              >
+                {PRODUCT_UNITS.map((unit) => (
+                  <option key={unit.value} value={unit.value}>
+                    {unit.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
