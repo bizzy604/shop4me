@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { isStackServerConfigured, stackServerApp } from '@/lib/stack';
 
-const protectedRoutes = ['/orders', '/checkout/confirmation', '/admin'];
+const protectedRoutes = ['/orders', '/checkout', '/checkout/confirmation', '/admin'];
 
 export async function middleware(request: NextRequest) {
   // Skip middleware during build/prerender or if Stack Auth env vars are not set
@@ -35,6 +35,9 @@ export async function middleware(request: NextRequest) {
       signInUrl.searchParams.set('redirect', redirectTarget);
       return NextResponse.redirect(signInUrl);
     }
+
+    // User sync will happen in the server action (checkout, orders page, etc.)
+    // since Prisma cannot run in Edge Runtime (middleware environment)
   } catch (error) {
     console.error('Auth middleware error:', error);
     const signInUrl = new URL('/auth/signin', request.url);

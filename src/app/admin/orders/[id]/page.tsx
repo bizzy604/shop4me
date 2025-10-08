@@ -212,7 +212,20 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </Card>
 
           {/* Expenses Tracking */}
-          <ExpenseTracker order={order} />
+          <ExpenseTracker 
+            order={{
+              id: order.id,
+              expenses: order.expenses.map((expense) => ({
+                id: expense.id,
+                cost: expense.cost.toNumber(),
+                deliveryFee: expense.deliveryFee?.toNumber() ?? null,
+                note: expense.note,
+                evidenceUrl: expense.evidenceUrl,
+                createdAt: expense.createdAt,
+                enteredBy: expense.enteredBy,
+              })),
+            }}
+          />
 
           {/* Activity Log */}
           <Card>

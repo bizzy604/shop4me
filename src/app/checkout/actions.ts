@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { stackServerApp } from "@/lib/stack";
+import { syncUserToDatabase } from "@/lib/user-sync";
 
 export type CheckoutActionResult =
   | { ok: true; orderId: string }
@@ -105,22 +106,36 @@ export async function createOrderDraft(formData: FormData): Promise<CheckoutActi
     return { ok: false, fieldErrors };
   }
 
-  // Get authenticated user if available
-  let userId: string | null = null;
+  // Authentication is required for checkout
+  // Get authenticated user and ensure they exist in the database
+  let userId: string;
   try {
-    const user = await stackServerApp.getUser({ or: 'return-null' });
-    if (user) {
-      userId = user.id;
+    const user = await stackServerApp.getUser({ or: 'throw' });
+    
+    // Sync user to database to ensure they exist
+    const syncResult = await syncUserToDatabase(user);
+    
+    if (!syncResult.success) {
+      console.error("Failed to sync user during checkout:", syncResult.error);
+      return {
+        ok: false,
+        formError: "Unable to verify your account. Please try signing out and signing back in.",
+      };
     }
+    
+    userId = syncResult.userId;
   } catch (error) {
-    console.error("Failed to get user during checkout", error);
-    // Continue without userId - allow guest checkout
+    console.error("Authentication required for checkout", error);
+    return {
+      ok: false,
+      formError: "You must be signed in to place an order. Please sign in and try again.",
+    };
   }
 
   try {
     const order = await prisma.order.create({
       data: {
-        userId, // Link order to authenticated user
+        userId, // Link order to authenticated user (guaranteed to exist in DB)
         customerName,
         customerPhone,
         contactName: contactName || null,

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { stackServerApp } from "@/lib/stack";
+import { syncUserToDatabase } from "@/lib/user-sync";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/currency";
 
@@ -68,11 +69,26 @@ export default async function OrdersPage() {
     redirect("/auth/signin?redirect=" + encodeURIComponent("/orders"));
   }
 
+  // Sync user to database (ensures they exist for order linking)
+  const syncResult = await syncUserToDatabase(user);
+  
+  if (!syncResult.success) {
+    console.error("Failed to sync user:", syncResult.error);
+    // Continue anyway - show orders if possible
+  }
+
+  const dbUserId = syncResult.success ? syncResult.userId : null;
+
   // Build the where clause for finding user's orders
-  // Match by userId primarily, and optionally by email for legacy orders
-  const whereConditions: Array<{ userId?: string; customerPhone?: string }> = [
-    { userId: user.id },
-  ];
+  // Match by userId primarily, and optionally by Stack providerId for legacy orders
+  const whereConditions: Array<{ userId?: string; customerPhone?: string }> = [];
+  
+  if (dbUserId) {
+    whereConditions.push({ userId: dbUserId });
+  }
+
+  // Add fallback for orders placed with the Stack user ID before database sync
+  whereConditions.push({ userId: user.id });
 
   // Add fallback for orders placed with the same email before user registration
   if (user.primaryEmail) {

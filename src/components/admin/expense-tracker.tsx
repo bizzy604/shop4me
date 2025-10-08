@@ -17,8 +17,8 @@ interface ExpenseTrackerProps {
     id: string;
     expenses: Array<{
       id: string;
-      cost: { toNumber(): number };
-      deliveryFee: { toNumber(): number } | null;
+      cost: number;
+      deliveryFee: number | null;
       note: string | null;
       evidenceUrl: string | null;
       createdAt: Date;
@@ -67,7 +67,7 @@ export function ExpenseTracker({ order }: ExpenseTrackerProps) {
   };
 
   const totalExpenses = order.expenses.reduce((sum, expense) => {
-    return sum + expense.cost.toNumber() + (expense.deliveryFee?.toNumber() || 0);
+    return sum + expense.cost + (expense.deliveryFee || 0);
   }, 0);
 
   return (
@@ -101,13 +101,13 @@ export function ExpenseTracker({ order }: ExpenseTrackerProps) {
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">
-                        {formatCurrency(expense.cost.toNumber())}
+                        {formatCurrency(expense.cost)}
                       </span>
                       {expense.deliveryFee && (
                         <>
                           <span className="text-muted-foreground">+</span>
                           <span className="text-sm">
-                            {formatCurrency(expense.deliveryFee.toNumber())} delivery
+                            {formatCurrency(expense.deliveryFee)} delivery
                           </span>
                         </>
                       )}
