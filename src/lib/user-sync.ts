@@ -55,9 +55,10 @@ export async function syncUserToDatabase(
     
     // Extract phone from Stack user data if available
     // Stack Auth may store phone in different fields depending on configuration
-    const phone = (stackUser as any).phoneNumber || 
-                  (stackUser as any).primaryPhoneNumber || 
-                  undefined;
+    // We use type assertion with Record to safely access potential phone fields
+    const userWithPhone = stackUser as Record<string, unknown>;
+    const phone = (typeof userWithPhone.phoneNumber === 'string' ? userWithPhone.phoneNumber : undefined) || 
+                  (typeof userWithPhone.primaryPhoneNumber === 'string' ? userWithPhone.primaryPhoneNumber : undefined);
 
     // Ensure at least phone or email is present
     if (!phone && !email) {
