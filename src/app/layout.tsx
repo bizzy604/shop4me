@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackClientApp } from "../stack/client";
-import { Poppins } from "next/font/google";
+import { DM_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import StackAuthProvider from "@/components/stack-provider";
@@ -9,10 +9,16 @@ import { CartProvider } from "@/components/cart-provider";
 import { TooltipProvider } from "@stackframe/stack-ui";
 import { Header } from "@/components/header";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const dmSans = DM_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "700"],
+});
+
+const spaceMono = Space_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning
-        className={`${poppins.variable} font-sans antialiased`}
+        className={`${dmSans.variable} ${spaceMono.variable} font-sans antialiased`}
       ><StackProvider app={stackClientApp}><StackTheme>
         <StackAuthProvider>
           <CartProvider>
